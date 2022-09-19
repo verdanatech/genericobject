@@ -1,29 +1,32 @@
 <?php
-/*
- This file is part of the genericobject plugin.
 
- Genericobject plugin is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- Genericobject plugin is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with Genericobject. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
- @package   genericobject
- @author    the genericobject plugin team
- @copyright Copyright (c) 2010-2011 Order plugin team
- @license   GPLv2+
-            http://www.gnu.org/licenses/gpl.txt
- @link      https://forge.indepnet.n$/projects/genericobject
- @link      http://www.glpi-project.org/
- @since     2009
- ---------------------------------------------------------------------- */
+/**
+ * -------------------------------------------------------------------------
+ * GenericObject plugin for GLPI
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of GenericObject.
+ *
+ * GenericObject is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GenericObject is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GenericObject. If not, see <http://www.gnu.org/licenses/>.
+ * -------------------------------------------------------------------------
+ * @copyright Copyright (C) 2009-2022 by GenericObject plugin team.
+ * @license   GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
+ * @link      https://github.com/pluginsGLPI/genericobject
+ * -------------------------------------------------------------------------
+ */
 
 class PluginGenericobjectObject extends CommonDBTM {
    use Glpi\Features\Clonable;
@@ -54,8 +57,7 @@ class PluginGenericobjectObject extends CommonDBTM {
 
 
    public function __construct() {
-      $class       = get_called_class();
-      $this->table = getTableForItemType($class);
+      $class = get_called_class();
       if (class_exists($class)) {
          $this->objecttype = PluginGenericobjectType::getInstance($class);
       }
@@ -72,9 +74,6 @@ class PluginGenericobjectObject extends CommonDBTM {
       }
 
       if ($this->canUseNotepad()) {
-         // For GLPI 0.85.x
-         $this->usenotepadrights = true;
-         // For GLPI 0.90.x
          $this->usenotepad = true;
       }
    }
@@ -182,9 +181,9 @@ class PluginGenericobjectObject extends CommonDBTM {
          //Change url for adding a new object, depending on template management activation
          if ($item->canUseTemplate()) {
             //Template management is active
-            $add_url = "/front/setup.templates.php?itemtype=$class&amp;add=1";
+            $add_url = "/front/setup.templates.php?itemtype=$class&add=1";
             $PLUGIN_HOOKS['submenu_entry']['genericobject']['options'][$class]['links']['template']
-                                                        = "/front/setup.templates.php?itemtype=$class&amp;add=0";
+                                                        = "/front/setup.templates.php?itemtype=$class&add=0";
          } else {
             //Template management is not active
             $add_url = Toolbox::getItemTypeFormURL($class, false);
@@ -224,6 +223,18 @@ class PluginGenericobjectObject extends CommonDBTM {
                array_push($ORDER_TYPES, $class);
             }
          }
+         if ($item->canBeReserved()) {
+            //Manage name used for sector
+            //See object.form.php L101
+            //it can be 'itemtype' name or 'family' name
+            if (($name = PluginGenericobjectType::getFamilyNameByItemtype($class)) === false) {
+               $name = $class;
+            }
+            //from define.php $CFG_GLPI['javascript']['assets'] seems to be computed only once (from start)
+            //need to add manually js for sector and itemtype/family
+            $CFG_GLPI['javascript']['assets'][strtolower($name)] = ['fullcalendar', 'reservations'];
+         }
+
          if ($item->canUseGlobalSearch()) {
             if (!in_array($class, $CFG_GLPI['asset_types'])) {
                array_push($CFG_GLPI['asset_types'], $class);
@@ -355,6 +366,11 @@ class PluginGenericobjectObject extends CommonDBTM {
       $this->addDefaultFormTab($tabs);
 
       if (!$this->isNewItem()) {
+
+         // Register impact tab is enabled
+         if ($this->canUseImpact()) {
+            $this->addImpactTab($tabs, $options);
+         }
 
          if ($this->canUseNetworkPorts()) {
             $this->addStandardTab('NetworkPort', $tabs, $options);
@@ -506,14 +522,15 @@ class PluginGenericobjectObject extends CommonDBTM {
       return ($this->objecttype->canUseItemDevice());
    }
 
+   function canUseImpact() {
+      return ($this->objecttype->canUseImpact());
+   }
+
    function title() {
    }
 
 
    function showForm($id, $options = [], $previsualisation = false) {
-      global $DB;
-
-      $display_date = (!method_exists('CommonDBTM', 'showDates'));
       if ($previsualisation) {
          $canedit = true;
          $this->getEmpty();
@@ -531,12 +548,9 @@ class PluginGenericobjectObject extends CommonDBTM {
 
       if (isset($options['withtemplate']) && $options['withtemplate'] == 2) {
          $template   = "newcomp";
-         $date = sprintf(__('Created on %s'), Html::convDateTime($_SESSION["glpi_currenttime"]));
       } else if (isset($options['withtemplate']) && $options['withtemplate'] == 1) {
          $template   = "newtemplate";
-         $date = sprintf(__('Created on %s'), Html::convDateTime($_SESSION["glpi_currenttime"]));
       } else {
-         $date = sprintf(__('Last update on %s'), Html::convDateTime($this->fields["date_mod"]));
          $template   = false;
       }
 
@@ -565,16 +579,6 @@ class PluginGenericobjectObject extends CommonDBTM {
          }
       }
       $this->closeColumn();
-
-      if ($display_date && !$this->isNewID($id)) {
-         echo "<tr class='tab_bg_1'>";
-         echo "<td colspan='2' class='center'>".$date;
-         if (!$template && !empty($this->fields['template_name'])) {
-            echo "<span class='small_space'>(".__("Template name")."&nbsp;: ".
-                  $this->fields['template_name'].")</span>";
-         }
-         echo "</td></tr>";
-      }
 
       if (!$previsualisation) {
          $this->showFormButtons($options);
@@ -611,7 +615,11 @@ class PluginGenericobjectObject extends CommonDBTM {
          }
          $this->endColumn();
          $this->startColumn();
-         switch (preg_replace('/\(\d+\)$/', '', $description['Type'])) {
+
+         // Keep only main column type by removing anything that is preceded by a space (e.g. " unsigned")
+         // or a parenthesis (e.g. "(255)").
+         $column_type = preg_replace('/^([a-z]+)([ (].+)*$/', '$1', $description['Type']);
+         switch ($column_type) {
             case "int":
                $fk_table = getTableNameForForeignKeyField($name);
                if ($fk_table != '') {
@@ -673,7 +681,12 @@ class PluginGenericobjectObject extends CommonDBTM {
                } else {
                    $objectName = $this->fields[$name];
                }
-               Html::autocompletionTextField($this, $name, ['value' => $objectName]);
+               echo Html::input(
+                  $name,
+                  [
+                     'value' => $objectName,
+                  ]
+               );
                break;
 
             case "longtext":
@@ -707,14 +720,15 @@ class PluginGenericobjectObject extends CommonDBTM {
                   );
                   break;
 
-            default:
             case "float":
+            case 'decimal':
+               echo "<input type='number' name='$name' value='$value' step='any' />";
+               break;
+
+            default:
                   echo "<input type='text' name='$name' value='$value'>";
                   break;
 
-            case 'decimal':
-                  echo "<input type='text' name='$name' value='".Html::formatNumber($value)."'>";
-                  break;
          }
          $this->endColumn();
       }
@@ -926,9 +940,10 @@ class PluginGenericobjectObject extends CommonDBTM {
          }
 
          //Field type
-         switch ($values['Type']) {
+         $column_type = preg_replace('/^([a-z]+)([ (].+)*$/', '$1', $values['Type']);
+         switch ($column_type) {
             default:
-            case "varchar(255)":
+            case "varchar":
                if ($field == 'name') {
                   $option['datatype']      = 'itemlink';
                   $option['itemlink_type'] = get_called_class();
@@ -948,7 +963,7 @@ class PluginGenericobjectObject extends CommonDBTM {
                   $option['displaytype'] = 'text';
                }
                break;
-            case "tinyint(1)":
+            case "tinyint":
                $option['datatype'] = 'bool';
                if ($item->canUsePluginDataInjection()) {
                   //Datainjection specific
@@ -963,7 +978,7 @@ class PluginGenericobjectObject extends CommonDBTM {
                   $option['displaytype'] = 'multiline_text';
                }
                break;
-            case "int(11)":
+            case "int":
                if ($tmp != '') {
                   $option['datatype'] = 'dropdown';
                } else {
@@ -1135,7 +1150,7 @@ class PluginGenericobjectObject extends CommonDBTM {
 
       // KK TODO: check if MassiveAction itemtypes are concerned
       //if (in_array ($options['itemtype'], $GENINVENTORYNUMBER_TYPES)) {
-      switch ($ma->action) {
+      switch ($ma->getAction()) {
          case "plugin_genericobject_transfer" :
                Dropdown::show('Entity', ['name' => 'new_entity']);
                echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" .
@@ -1209,9 +1224,9 @@ class PluginGenericobjectObject extends CommonDBTM {
             $links['search'] = $itemtype::getSearchUrl(false);
 
             if ($item->canUseTemplate()) {
-               $links['template'] = "/front/setup.templates.php?itemtype=$itemtype&amp;add=0";
+               $links['template'] = "/front/setup.templates.php?itemtype=$itemtype&add=0";
                if (Session::haveRight($itemtype_rightname, CREATE)) {
-                  $links['add'] = "/front/setup.templates.php?itemtype=$itemtype&amp;add=1";
+                  $links['add'] = "/front/setup.templates.php?itemtype=$itemtype&add=1";
                }
             } else {
                if (Session::haveRight($itemtype_rightname, CREATE)) {

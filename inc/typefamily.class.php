@@ -1,29 +1,32 @@
 <?php
-/*
- This file is part of the genericobject plugin.
 
- Genericobject plugin is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- Genericobject plugin is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with Genericobject. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
- @package   genericobject
- @author    the genericobject plugin team
- @copyright Copyright (c) 2010-2011 Order plugin team
- @license   GPLv2+
-            http://www.gnu.org/licenses/gpl.txt
- @link      https://forge.indepnet.net/projects/genericobject
- @link      http://www.glpi-project.org/
- @since     2009
- ---------------------------------------------------------------------- */
+/**
+ * -------------------------------------------------------------------------
+ * GenericObject plugin for GLPI
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of GenericObject.
+ *
+ * GenericObject is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GenericObject is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GenericObject. If not, see <http://www.gnu.org/licenses/>.
+ * -------------------------------------------------------------------------
+ * @copyright Copyright (C) 2009-2022 by GenericObject plugin team.
+ * @license   GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
+ * @link      https://github.com/pluginsGLPI/genericobject
+ * -------------------------------------------------------------------------
+ */
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -39,18 +42,22 @@ class PluginGenericobjectTypeFamily extends CommonDropdown {
    static function install(Migration $migration) {
       global $DB;
 
+      $default_charset = DBConnection::getDefaultCharset();
+      $default_collation = DBConnection::getDefaultCollation();
+      $default_key_sign = DBConnection::getDefaultPrimaryKeySignOption();
+
       $table = getTableForItemType(__CLASS__);
       if (!$DB->tableExists($table)) {
          $query = "CREATE TABLE `$table` (
-                           `id` INT( 11 ) NOT NULL AUTO_INCREMENT,
-                           `name` varchar(255) collate utf8_unicode_ci default NULL,
+                           `id` INT {$default_key_sign} NOT NULL AUTO_INCREMENT,
+                           `name` varchar(255) default NULL,
                            `comment` text NULL,
                            `date_mod` TIMESTAMP NULL DEFAULT NULL,
                            `date_creation` TIMESTAMP NULL DEFAULT NULL,
                            PRIMARY KEY (`id`),
                            KEY `date_mod` (`date_mod`),
                            KEY `date_creation` (`date_creation`)
-                           ) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+                           ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
          $DB->query($query) or die($DB->error());
       }
    }

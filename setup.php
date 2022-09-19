@@ -1,46 +1,39 @@
 <?php
-/*
- -------------------------------------------------------------------------
- Genericobject plugin for GLPI
- Copyright (C) 2016 by the Genericobject Development Team.
 
- https://github.com/pluginsGLPI/genericobject
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of Genericobject.
-
- Genericobject is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- Genericobject is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with Genericobject. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
- @package   genericobject
- @author    the genericobject plugin team
- @copyright Copyright (c) 2010-2011 Order plugin team
- @license   GPLv2+
-            http://www.gnu.org/licenses/gpl.txt
- @link      https://forge.indepnet.net/projects/genericobject
- @link      http://www.glpi-project.org/
- @since     2009
- ----------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * GenericObject plugin for GLPI
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of GenericObject.
+ *
+ * GenericObject is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GenericObject is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GenericObject. If not, see <http://www.gnu.org/licenses/>.
+ * -------------------------------------------------------------------------
+ * @copyright Copyright (C) 2009-2022 by GenericObject plugin team.
+ * @license   GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
+ * @link      https://github.com/pluginsGLPI/genericobject
+ * -------------------------------------------------------------------------
  */
 
-define ('PLUGIN_GENERICOBJECT_VERSION', '2.11.0');
+define ('PLUGIN_GENERICOBJECT_VERSION', '2.13.0');
 
 // Minimal GLPI version, inclusive
-define("PLUGIN_GENERICOBJECT_MIN_GLPI", "9.5");
+define("PLUGIN_GENERICOBJECT_MIN_GLPI", "10.0.0");
 // Maximum GLPI version, exclusive
-define("PLUGIN_GENERICOBJECT_MAX_GLPI", "9.6");
+define("PLUGIN_GENERICOBJECT_MAX_GLPI", "10.0.99");
 
 if (!defined("GENERICOBJECT_DIR")) {
    define("GENERICOBJECT_DIR", Plugin::getPhpDir("genericobject"));
@@ -113,7 +106,7 @@ $go_autoloader->register();
  */
 function plugin_init_genericobject() {
    global $PLUGIN_HOOKS, $GO_BLACKLIST_FIELDS,
-          $GENERICOBJECT_PDF_TYPES, $GO_LINKED_TYPES, $GO_READONLY_FIELDS;
+          $GENERICOBJECT_PDF_TYPES, $GO_LINKED_TYPES, $GO_READONLY_FIELDS, $CFG_GLPI;
 
    $GO_READONLY_FIELDS  =  ["is_helpdesk_visible", "comment"];
 
@@ -127,16 +120,11 @@ function plugin_init_genericobject() {
 
    $PLUGIN_HOOKS['csrf_compliant']['genericobject'] = true;
    $GENERICOBJECT_PDF_TYPES                         =  [];
-   $plugin                                          = new Plugin();
 
-   if ($plugin->isInstalled("genericobject")
-      && $plugin->isActivated("genericobject")
-         && isset($_SESSION['glpiactiveprofile'])) {
+   if (Plugin::isPluginActive("genericobject") && isset($_SESSION['glpiactiveprofile'])) {
 
       //if treeview is installed
-      if ($plugin->isInstalled("treeview")
-            && $plugin->isActivated("treeview")
-               && class_exists('PluginTreeviewConfig')) {
+      if (Plugin::isPluginActive("treeview") && class_exists('PluginTreeviewConfig')) {
 
          //foreach type in genericobject
          foreach (PluginGenericobjectType::getTypes() as $itemtype => $value) {
@@ -198,6 +186,22 @@ function plugin_init_genericobject() {
          PluginGenericobjectType::getType(),
          'getTypesForFormcreator'
       ];
+
+      // Add every genericobject item's to the list of itemtypes for which the
+      // impact analysis can be enabled
+      foreach ((new PluginGenericobjectType())->find([]) as $row) {
+         if (empty($row['impact_icon'])) {
+            $icon = ""; // Will fallback to default impact icon
+         } else {
+            $icon = PluginGenericobjectType::getImpactIconFileStoragePath(
+               $row['impact_icon'],
+               $row['itemtype'],
+               true
+            ) ?? "";
+         }
+
+         $CFG_GLPI['impact_asset_types'][$row['itemtype']] = $icon;
+      }
    }
 }
 

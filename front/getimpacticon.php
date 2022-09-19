@@ -30,6 +30,36 @@
 
 include ("../../../inc/includes.php");
 
-$dropdown = new PluginGenericobjectTypeFamily();
-include (GLPI_ROOT . "/front/dropdown.common.php");
+// Read itemtype
+$itemtype = $_GET['itemtype'] ?? null;
 
+// Missing required parameter
+if (empty($itemtype)) {
+    http_response_code(400);
+    die;
+}
+
+// Find by itemtype
+$type = new PluginGenericobjectType();
+if (!$type->getFromDBByCrit(['itemtype' => $itemtype])) {
+    http_response_code(400);
+    die;
+}
+
+// Get filepath
+$filepath = $type->getImpactIconFilePath();
+if ($filepath === null) {
+    http_response_code(404);
+    die;
+}
+
+// Validate image
+if (!Document::isImage($filepath)) {
+    http_response_code(400);
+    die;
+}
+
+// Send image
+header("Content-Type: " . mime_content_type($filepath));
+readfile($filepath);
+die;
