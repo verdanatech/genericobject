@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# 조성현 <jaymz9634@gmail.com>, 2020
+# SeongHyeon Cho <jaymz9634@gmail.com>, 2020
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Plugin - Genericobject\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-13 13:58+0000\n"
+"POT-Creation-Date: 2022-11-16 07:46+0000\n"
 "PO-Revision-Date: 2015-07-23 09:47+0000\n"
-"Last-Translator: 조성현 <jaymz9634@gmail.com>, 2020\n"
+"Last-Translator: SeongHyeon Cho <jaymz9634@gmail.com>, 2020\n"
 "Language-Team: Korean (Korea) (http://www.transifex.com/teclib/glpi-project-plugin-genericobject/language/ko_KR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,7 +34,7 @@ msgstr "새 항목 추가"
 msgid "Behaviour"
 msgstr "동작"
 
-#: front/familylist.php:40 index.php:71
+#: index.php:71 front/familylist.php:40
 msgid "Empty family"
 msgstr "빈 집단"
 
@@ -90,9 +90,9 @@ msgstr "객체 미리보기"
 msgid "Objects"
 msgstr "객체"
 
-#: inc/object_item.class.php:112 inc/profile.class.php:42
-#: inc/type.class.php:403 inc/type.class.php:538 front/familylist.php:36
-#: front/familylist.php:44 front/type.form.php:76 setup.php:231 index.php:61
+#: index.php:61 inc/object_item.class.php:112 inc/profile.class.php:42
+#: inc/type.class.php:403 inc/type.class.php:538 front/type.form.php:76
+#: front/familylist.php:36 front/familylist.php:44 setup.php:231
 msgid "Objects management"
 msgstr "객체 관리"
 
@@ -109,8 +109,8 @@ msgstr "읽기-전용 항목"
 msgid "Regenerate files"
 msgstr "파일 재생성"
 
-#: front/commontreedropdown.form.php:39 front/commondropdown.php:39
-#: front/commondropdown.form.php:39
+#: front/commontreedropdown.form.php:39 front/commondropdown.form.php:39
+#: front/commondropdown.php:39
 msgid "The requested dropdown does not exists"
 msgstr "요청된 드롭다운은 존재하지 않습니다"
 

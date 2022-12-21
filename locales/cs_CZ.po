@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Plugin - Genericobject\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-13 13:58+0000\n"
+"POT-Creation-Date: 2022-11-16 07:46+0000\n"
 "PO-Revision-Date: 2015-07-23 09:47+0000\n"
 "Last-Translator: David Stepan <stepand@tiscali.cz>, 2022\n"
 "Language-Team: Czech (Czech Republic) (http://www.transifex.com/teclib/glpi-project-plugin-genericobject/language/cs_CZ/)\n"
@@ -36,7 +36,7 @@ msgstr "Přidat novou kolonku"
 msgid "Behaviour"
 msgstr "Chování"
 
-#: front/familylist.php:40 index.php:71
+#: index.php:71 front/familylist.php:40
 msgid "Empty family"
 msgstr "Prázdná rodina"
 
@@ -92,9 +92,9 @@ msgstr "Náhled objektu"
 msgid "Objects"
 msgstr "Objekty"
 
-#: inc/object_item.class.php:112 inc/profile.class.php:42
-#: inc/type.class.php:403 inc/type.class.php:538 front/familylist.php:36
-#: front/familylist.php:44 front/type.form.php:76 setup.php:231 index.php:61
+#: index.php:61 inc/object_item.class.php:112 inc/profile.class.php:42
+#: inc/type.class.php:403 inc/type.class.php:538 front/type.form.php:76
+#: front/familylist.php:36 front/familylist.php:44 setup.php:231
 msgid "Objects management"
 msgstr "Správa objektů"
 
@@ -114,8 +114,8 @@ msgstr "Kolonka pouze pro čtení"
 msgid "Regenerate files"
 msgstr "Znovu vytvořit soubory"
 
-#: front/commontreedropdown.form.php:39 front/commondropdown.php:39
-#: front/commondropdown.form.php:39
+#: front/commontreedropdown.form.php:39 front/commondropdown.form.php:39
+#: front/commondropdown.php:39
 msgid "The requested dropdown does not exists"
 msgstr "Požadovaná rozbalovací nabídka neexistuje"
 

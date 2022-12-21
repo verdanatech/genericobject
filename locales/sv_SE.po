@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Plugin - Genericobject\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-13 13:58+0000\n"
+"POT-Creation-Date: 2022-11-16 07:46+0000\n"
 "PO-Revision-Date: 2015-07-23 09:47+0000\n"
 "Last-Translator: jchan <jhornqvist@gmail.com>, 2018\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/teclib/glpi-project-plugin-genericobject/language/sv_SE/)\n"
@@ -34,7 +34,7 @@ msgstr "Lägg till nytt fält"
 msgid "Behaviour"
 msgstr "Beteende"
 
-#: front/familylist.php:40 index.php:71
+#: index.php:71 front/familylist.php:40
 msgid "Empty family"
 msgstr "Tom familj"
 
@@ -90,9 +90,9 @@ msgstr "Förhandsgranska tillgång"
 msgid "Objects"
 msgstr "Tillgångar"
 
-#: inc/object_item.class.php:112 inc/profile.class.php:42
-#: inc/type.class.php:403 inc/type.class.php:538 front/familylist.php:36
-#: front/familylist.php:44 front/type.form.php:76 setup.php:231 index.php:61
+#: index.php:61 inc/object_item.class.php:112 inc/profile.class.php:42
+#: inc/type.class.php:403 inc/type.class.php:538 front/type.form.php:76
+#: front/familylist.php:36 front/familylist.php:44 setup.php:231
 msgid "Objects management"
 msgstr "Hantera tillgångar"
 
@@ -110,8 +110,8 @@ msgstr "Skrivskyddat fält"
 msgid "Regenerate files"
 msgstr "Skapa filer på nytt"
 
-#: front/commontreedropdown.form.php:39 front/commondropdown.php:39
-#: front/commondropdown.form.php:39
+#: front/commontreedropdown.form.php:39 front/commondropdown.form.php:39
+#: front/commondropdown.php:39
 msgid "The requested dropdown does not exists"
 msgstr "Den begärda rullmenyn saknas"
 
