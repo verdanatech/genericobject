@@ -22,13 +22,13 @@
  * You should have received a copy of the GNU General Public License
  * along with GenericObject. If not, see <http://www.gnu.org/licenses/>.
  * -------------------------------------------------------------------------
- * @copyright Copyright (C) 2009-2022 by GenericObject plugin team.
+ * @copyright Copyright (C) 2009-2023 by GenericObject plugin team.
  * @license   GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
  * @link      https://github.com/pluginsGLPI/genericobject
  * -------------------------------------------------------------------------
  */
 
-define ('PLUGIN_GENERICOBJECT_VERSION', '2.14.1');
+define ('PLUGIN_GENERICOBJECT_VERSION', '2.14.3');
 
 // Minimal GLPI version, inclusive
 define("PLUGIN_GENERICOBJECT_MIN_GLPI", "10.0.0");

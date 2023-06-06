@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GenericObject. If not, see <http://www.gnu.org/licenses/>.
  * -------------------------------------------------------------------------
- * @copyright Copyright (C) 2009-2022 by GenericObject plugin team.
+ * @copyright Copyright (C) 2009-2023 by GenericObject plugin team.
  * @license   GPLv3 https://www.gnu.org/licenses/gpl-3.0.html
  * @link      https://github.com/pluginsGLPI/genericobject
  * -------------------------------------------------------------------------
@@ -84,7 +84,7 @@ class PluginGenericobjectObject extends CommonDBTM {
          Contract_Item::class,
          Document_Item::class,
          Infocom::class,
-         Item_devices::class,
+         Item_Devices::class,
          NetworkPort::class,
       ];
    }
