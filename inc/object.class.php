@@ -1208,6 +1208,7 @@ class PluginGenericobjectObject extends CommonDBTM {
 
    static function getMenuContent() {
       $types = PluginGenericobjectType::getTypes();
+      $menu = [];
       foreach ($types as $type) {
 
          $itemtype = $type['itemtype'];
@@ -1260,7 +1261,12 @@ class PluginGenericobjectObject extends CommonDBTM {
          }
       }
 
+      // Sort by menu entries name
+      uasort($menu, fn($a, $b) => $a['title'] <=> $b['title']);
+
+      // Mark as multi entries
       $menu['is_multi_entries']= true;
+
       return $menu;
    }
 
