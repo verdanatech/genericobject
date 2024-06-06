@@ -42,12 +42,12 @@ class PluginGenericobjectObject extends CommonDBTM
         /** @var array $LANG */
         global $LANG;
         $class    = get_called_class();
-      //Datainjection : Don't understand why I need this trick : need to be investigated !
+        //Datainjection : Don't understand why I need this trick : need to be investigated !
         if (preg_match("/Injection$/i", $class)) {
             $class = str_replace("Injection", "", $class);
         }
         $item     = new $class();
-      //Itemtype name can be contained in a specific locale field : try to load it
+        //Itemtype name can be contained in a specific locale field : try to load it
         PluginGenericobjectType::includeLocales($item->objecttype->fields['name']);
         if (isset($LANG['genericobject'][$class][0])) {
             $type_name = $LANG['genericobject'][$class][0];
@@ -100,7 +100,7 @@ class PluginGenericobjectObject extends CommonDBTM
      * @params itemtype, id, pic, url, name
      *
      * @return array
-    **/
+     **/
     public static function showGenericObjectTreeview($params)
     {
         /** @var array $CFG_GLPI */
@@ -122,7 +122,7 @@ class PluginGenericobjectObject extends CommonDBTM
      * @params itemtype, id, pic, url, name
      *
      * @return array
-    **/
+     **/
     public static function getParentNodeSearchUrl($params)
     {
         if (array_key_exists($params['itemtype'], PluginGenericobjectType::getTypes())) {
@@ -376,7 +376,7 @@ class PluginGenericobjectObject extends CommonDBTM
         $this->addDefaultFormTab($tabs);
 
         if (!$this->isNewItem()) {
-           // Register impact tab is enabled
+            // Register impact tab is enabled
             if ($this->canUseImpact()) {
                 $this->addImpactTab($tabs, $options);
             }
@@ -423,7 +423,7 @@ class PluginGenericobjectObject extends CommonDBTM
     }
 
 
-   //------------------------ CAN methods -------------------------------------//
+    //------------------------ CAN methods -------------------------------------//
 
     public function getObjectTypeName()
     {
@@ -454,9 +454,9 @@ class PluginGenericobjectObject extends CommonDBTM
 
     public function canUseUnicity()
     {
-       // Disable unicity feature (for GLPI 0.85 onward) : see issue #16
-       // Related code : search for #16
-       // FIXME : The bug may be in GLPI itself
+        // Disable unicity feature (for GLPI 0.85 onward) : see issue #16
+        // Related code : search for #16
+        // FIXME : The bug may be in GLPI itself
         return ($this->objecttype->canUseUnicity() && Session::haveRight("config", READ));
     }
 
@@ -482,8 +482,8 @@ class PluginGenericobjectObject extends CommonDBTM
     public function canBeReserved()
     {
         return (
-         $this->objecttype->canBeReserved()
-         and Session::haveRight(ReservationItem::$rightname, ReservationItem::RESERVEANITEM)
+            $this->objecttype->canBeReserved()
+            and Session::haveRight(ReservationItem::$rightname, ReservationItem::RESERVEANITEM)
         );
     }
 
@@ -572,7 +572,7 @@ class PluginGenericobjectObject extends CommonDBTM
             if ($id > 0) {
                 $this->check($id, READ);
             } else {
-               // Create item
+                // Create item
                 $this->check(-1, CREATE);
                 $this->getEmpty();
             }
@@ -599,7 +599,7 @@ class PluginGenericobjectObject extends CommonDBTM
             echo "</th></tr>";
         }
 
-       //Reset fields definition only to keep the itemtype ones
+        //Reset fields definition only to keep the itemtype ones
         $GO_FIELDS = [];
         plugin_genericobject_includeCommonFields(true);
         PluginGenericobjectType::includeConstants($this->getObjectTypeName(), true);
@@ -626,7 +626,8 @@ class PluginGenericobjectObject extends CommonDBTM
 
     public static function getFieldsToHide()
     {
-        return ['id', 'is_recursive', 'is_template', 'template_name', 'is_deleted',
+        return [
+            'id', 'is_recursive', 'is_template', 'template_name', 'is_deleted',
             'entities_id', 'notepad', 'date_mod', 'date_creation'
         ];
     }
@@ -634,6 +635,7 @@ class PluginGenericobjectObject extends CommonDBTM
 
     public function displayField($canedit, $name, $value, $template, $description = [])
     {
+
         $searchoption  = PluginGenericobjectField::getFieldOptions($name, get_called_class());
 
         if (
@@ -648,8 +650,8 @@ class PluginGenericobjectObject extends CommonDBTM
             $this->startColumn();
             echo '<label class="col-form-label col-xxl-5 text-xxl-end">' . $searchoption['name'] . '</label>';
 
-           // Keep only main column type by removing anything that is preceded by a space (e.g. " unsigned")
-           // or a parenthesis (e.g. "(255)").
+            // Keep only main column type by removing anything that is preceded by a space (e.g. " unsigned")
+            // or a parenthesis (e.g. "(255)").
             echo '<div class="col-xxl-7 text-start field-container">';
             $column_type = preg_replace('/^([a-z]+)([ (].+)*$/', '$1', $description['Type']);
             switch ($column_type) {
@@ -659,11 +661,12 @@ class PluginGenericobjectObject extends CommonDBTM
                         $itemtype   = getItemTypeForTable($fk_table);
                         $dropdown   = new $itemtype();
                         $parameters = ['name' => $name, 'value' => $value, 'comments' => true];
+                        $parameters["entity"] = [];
                         if ($dropdown->isEntityAssign()) {
-                            $parameters["entity"] = $this->fields['entities_id'];
+                            array_push($parameters["entity"], $this->fields['entities_id']);
                         }
                         if ($dropdown->maybeRecursive()) {
-                            $parameters['entity_sons'] = true;
+                            $parameters['is_recursive'] = true;
                         }
                         if (isset($searchoption['condition'])) {
                             $parameters['condition'] = $searchoption['condition'];
@@ -731,7 +734,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 case "longtext":
                 case "text":
                     echo "<textarea cols='40' rows='4' name='" . $name . "'>" . $value .
-                     "</textarea>";
+                        "</textarea>";
                     break;
 
                 case "emptyspace":
@@ -779,7 +782,7 @@ class PluginGenericobjectObject extends CommonDBTM
 
     /**
      * Add a new column
-    **/
+     **/
     public function startColumn()
     {
         if ($this->cpt == 0) {
@@ -798,7 +801,7 @@ class PluginGenericobjectObject extends CommonDBTM
 
     /**
      * End a column
-    **/
+     **/
     public function endColumn()
     {
         echo "</div>";
@@ -808,7 +811,7 @@ class PluginGenericobjectObject extends CommonDBTM
 
     /**
      * Close a column
-    **/
+     **/
     public function closeColumn()
     {
         if ($this->cpt > 0) {
@@ -820,7 +823,7 @@ class PluginGenericobjectObject extends CommonDBTM
     public function prepareInputForAdd($input)
     {
 
-       //Template management
+        //Template management
         if (isset($input["id"]) && $input["id"] > 0) {
             $input["_oldID"] = $input["id"];
         }
@@ -872,12 +875,13 @@ class PluginGenericobjectObject extends CommonDBTM
     public function rawSearchOptions()
     {
         $datainjection_blacklisted = ['id', 'date_mod', 'entities_id', 'date_creation'];
-        $index_exceptions = ['name' => 1, 'id' => 2, 'comment' => 16, 'date_mod' => 19,
+        $index_exceptions = [
+            'name' => 1, 'id' => 2, 'comment' => 16, 'date_mod' => 19,
             'entities_id' => 80, 'is_recursive' => 86, 'notepad' => 90,
             'date_creation' => 121
         ];
 
-       // Don't use indexes blacklisted by other item types in plugin DataInjection.
+        // Don't use indexes blacklisted by other item types in plugin DataInjection.
         $plugin = new Plugin();
         if (
             $plugin->isActivated("datainjection")
@@ -901,7 +905,7 @@ class PluginGenericobjectObject extends CommonDBTM
 
         $table   = getTableForItemType(get_called_class());
 
-       // Prevent usage of reserved and blacklisted indexes
+        // Prevent usage of reserved and blacklisted indexes
         $taken_indexes = array_merge($index_exceptions, $blacklisted_indexes);
 
         plugin_genericobject_includeCommonFields(true);
@@ -916,12 +920,12 @@ class PluginGenericobjectObject extends CommonDBTM
                 continue;
             }
 
-           //Some fields have fixed index values...
+            //Some fields have fixed index values...
             $currentindex = $index;
             if (isset($index_exceptions[$field])) {
                 $currentindex = $index_exceptions[$field];
             } else {
-               //If this index is reserved, jump to next available one.
+                //If this index is reserved, jump to next available one.
                 while (in_array($currentindex, $taken_indexes)) {
                     $currentindex++;
                 }
@@ -934,10 +938,10 @@ class PluginGenericobjectObject extends CommonDBTM
 
             $item = new $this->objecttype->fields['itemtype']();
 
-           //Table definition
-           //We test if it ends with s_id, in order to be sure that this pattern
-           //was found in a field that doesn't represent a foreign key
-           //for exemple a field called : is_identification
+            //Table definition
+            //We test if it ends with s_id, in order to be sure that this pattern
+            //was found in a field that doesn't represent a foreign key
+            //for exemple a field called : is_identification
             if (preg_match("/(s_id$|s_id_)/", $field)) {
                 $tmp  = getTableNameForForeignKeyField($field);
             } else {
@@ -952,10 +956,10 @@ class PluginGenericobjectObject extends CommonDBTM
                 $itemtype   = getItemTypeForTable($tmp);
                 $tmpobj     = new $itemtype();
 
-               //Set table
+                //Set table
                 $option['table'] = $tmp;
 
-               //Set field
+                //Set field
                 if ($tmpobj instanceof CommonTreeDropdown) {
                     $option['field'] = 'completename';
                 } else {
@@ -968,19 +972,19 @@ class PluginGenericobjectObject extends CommonDBTM
 
             $option['name']  = $searchoption['name'];
 
-           //Massive action or not
+            //Massive action or not
             if (isset($searchoption['massiveaction'])) {
                 $option['massiveaction'] = $searchoption['massiveaction'];
             }
 
-           //Datainjection option
+            //Datainjection option
             if (!in_array($field, $datainjection_blacklisted)) {
                 $option['injectable'] = 1;
             } else {
                 $option['injectable'] = 0;
             }
 
-           //Field type
+            //Field type
             $column_type = preg_replace('/^([a-z]+)([ (].+)*$/', '$1', $values['Type']);
             switch ($column_type) {
                 default:
@@ -999,7 +1003,7 @@ class PluginGenericobjectObject extends CommonDBTM
                         }
                     }
                     if ($item->canUsePluginDataInjection()) {
-                       //Datainjection specific
+                        //Datainjection specific
                         $option['checktype']   = 'text';
                         $option['displaytype'] = 'text';
                     }
@@ -1007,7 +1011,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 case "tinyint":
                     $option['datatype'] = 'bool';
                     if ($item->canUsePluginDataInjection()) {
-                       //Datainjection specific
+                        //Datainjection specific
                         $option['displaytype'] = 'bool';
                     }
                     break;
@@ -1015,7 +1019,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 case "longtext":
                     $option['datatype'] = 'text';
                     if ($item->canUsePluginDataInjection()) {
-                       //Datainjection specific
+                        //Datainjection specific
                         $option['displaytype'] = 'multiline_text';
                     }
                     break;
@@ -1031,7 +1035,7 @@ class PluginGenericobjectObject extends CommonDBTM
                             $option['displaytype'] = 'dropdown';
                             $option['checktype']   = 'text';
                         } else {
-                           //Datainjection specific
+                            //Datainjection specific
                             $option['displaytype'] = 'dropdown_integer';
                             $option['checktype']   = 'integer';
                         }
@@ -1041,7 +1045,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 case "decimal":
                     $option['datatype'] = $values['Type'];
                     if ($item->canUsePluginDataInjection()) {
-                       //Datainjection specific
+                        //Datainjection specific
                         $option['display']   = 'text';
                         $option['checktype'] = $values['Type'];
                     }
@@ -1049,7 +1053,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 case "date":
                     $option['datatype'] = 'date';
                     if ($item->canUsePluginDataInjection()) {
-                       //Datainjection specific
+                        //Datainjection specific
                         $option['displaytype'] = 'date';
                         $option['checktype']   = 'date';
                     }
@@ -1058,7 +1062,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 case "timestamp":
                     $option['datatype'] = 'datetime';
                     if ($item->canUsePluginDataInjection()) {
-                       //Datainjection specific
+                        //Datainjection specific
                         $option['displaytype'] = 'date';
                         $option['checktype']   = 'date';
                     }
@@ -1080,7 +1084,7 @@ class PluginGenericobjectObject extends CommonDBTM
             }
         );
 
-         return $options;
+        return $options;
     }
 
 
@@ -1104,7 +1108,7 @@ class PluginGenericobjectObject extends CommonDBTM
      * @param array $options options used during creation
      * @return array
      *
-    **/
+     **/
     public function addOrUpdateObject($values = [], $options = [])
     {
         //@phpstan-ignore-next-line
@@ -1123,7 +1127,7 @@ class PluginGenericobjectObject extends CommonDBTM
     public function transfer($new_entity)
     {
         if ($this->fields['id'] > 0 && $this->fields['entities_id'] != $new_entity) {
-           //Update entity for this object
+            //Update entity for this object
             $tmp['id']          = $this->fields['id'];
             $tmp['entities_id'] = $new_entity;
             $this->update($tmp);
@@ -1132,7 +1136,7 @@ class PluginGenericobjectObject extends CommonDBTM
             foreach (PluginGenericobjectSingletonObjectField::getInstance(get_called_class()) as $field => $data) {
                 $table = getTableNameForForeignKeyField($field);
 
-              //It is a dropdown table !
+                //It is a dropdown table !
                 if (
                     $field != 'entities_id'
                     && $table != ''
@@ -1159,7 +1163,7 @@ class PluginGenericobjectObject extends CommonDBTM
                         }
                         $tmp['entities_id']   = $new_entity;
                         $where['entities_id'] = $tmp['entities_id'];
-                  //There's a dropdown value in the target entity
+                        //There's a dropdown value in the target entity
                         if ($found = $dropdown->find($where)) {
                             $myfound = array_pop($found);
                             if ($myfound['id'] != $this->fields[$field]) {
@@ -1183,25 +1187,25 @@ class PluginGenericobjectObject extends CommonDBTM
         return true;
     }
 
-   /**
-    * @since version 0.85
-    *
-    * @see CommonDBTM::showMassiveActionsSubForm()
-   **/
+    /**
+     * @since version 0.85
+     *
+     * @see CommonDBTM::showMassiveActionsSubForm()
+     **/
     public static function showMassiveActionsSubForm(MassiveAction $ma)
     {
-       // KK TODO: check if MassiveAction itemtypes are concerned
-       //if (in_array ($options['itemtype'], $GENINVENTORYNUMBER_TYPES)) {
+        // KK TODO: check if MassiveAction itemtypes are concerned
+        //if (in_array ($options['itemtype'], $GENINVENTORYNUMBER_TYPES)) {
         switch ($ma->getAction()) {
             case "plugin_genericobject_transfer":
-                 Dropdown::show('Entity', ['name' => 'new_entity']);
-                 echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" .
-                  _sx('button', 'Post') . "\" >";
+                Dropdown::show('Entity', ['name' => 'new_entity']);
+                echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" .
+                    _sx('button', 'Post') . "\" >";
                 break;
             default:
                 break;
         }
-       //}
+        //}
         return true;
     }
 
@@ -1289,7 +1293,7 @@ class PluginGenericobjectObject extends CommonDBTM
                 if (
                     $type['plugin_genericobject_typefamilies_id'] > 0
                     && (!isset($_GET['itemtype'])
-                    || !preg_match("/itemtype=" . $_GET['itemtype'] . "/", $_GET['itemtype']))
+                        || !preg_match("/itemtype=" . $_GET['itemtype'] . "/", $_GET['itemtype']))
                 ) {
                     $family_id = $type['plugin_genericobject_typefamilies_id'];
                     $name      = Dropdown::getDropdownName("glpi_plugin_genericobject_typefamilies", $family_id, 0, false);
@@ -1313,10 +1317,10 @@ class PluginGenericobjectObject extends CommonDBTM
             }
         }
 
-       // Sort by menu entries name
-        uasort($menu, fn($a, $b) => $a['title'] <=> $b['title']);
+        // Sort by menu entries name
+        uasort($menu, fn ($a, $b) => $a['title'] <=> $b['title']);
 
-       // Mark as multi entries
+        // Mark as multi entries
         $menu['is_multi_entries'] = true;
 
         return $menu;
