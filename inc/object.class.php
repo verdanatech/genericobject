@@ -69,7 +69,7 @@ class PluginGenericobjectObject extends CommonDBTM
         if (preg_match("/PluginGenericobject(.*)/", $class, $results)) {
             if (preg_match("/^(.*)y$/i", $results[1], $end_results)) {
                 static::$rightname = 'plugin_genericobject_' . strtolower($end_results[1]) . 'ies';
-            } else if (preg_match("/^(.*)ss$/i", $results[1])) {
+            } else if (preg_match("/^(.*)(ss|x)$/i", $results[1])) {
                 static::$rightname = 'plugin_genericobject_' . strtolower($results[1]) . 'es';
             } else {
                 static::$rightname = 'plugin_genericobject_' . strtolower($results[1]) . 's';
@@ -872,7 +872,7 @@ class PluginGenericobjectObject extends CommonDBTM
     public function rawSearchOptions()
     {
         $datainjection_blacklisted = ['id', 'date_mod', 'entities_id', 'date_creation'];
-        $index_exceptions = ['name' => 1, 'id' => 2, 'comment' => 16, 'date_mod' => 19,
+        $index_exceptions = ['name' => 1, 'id' => 2, 'completename' => 3, 'comment' => 16, 'date_mod' => 19,
             'entities_id' => 80, 'is_recursive' => 86, 'notepad' => 90,
             'date_creation' => 121
         ];
@@ -892,7 +892,7 @@ class PluginGenericobjectObject extends CommonDBTM
 
         $index   = 3;
 
-        $options = [];
+        $options = \Location::rawSearchOptionsToAdd();
 
         $options[] = [
             'id'   => 'common',
