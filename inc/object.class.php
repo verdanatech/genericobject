@@ -173,22 +173,48 @@ class PluginGenericobjectObject extends CommonDBTM
         PluginGenericobjectType::includeLocales($item->getObjectTypeName());
         PluginGenericobjectType::includeConstants($item->getObjectTypeName());
 
-        Plugin::registerClass($class, [
-            "document_types"         => $item->canUseDocuments(),
-            "helpdesk_visible_types" => $item->canUseTickets(),
-            "linkgroup_types"        => isset($fields["groups_id"]),
-            "linkuser_types"         => isset($fields["users_id"]),
-            "linkgroup_tech_types"   => isset($fields["groups_id_tech"]),
-            "linkuser_tech_types"    => isset($fields["users_id_tech"]),
-            "ticket_types"           => $item->canUseTickets(),
-            "infocom_types"          => $item->canUseInfocoms(),
-            "networkport_types"      => $item->canUseNetworkPorts(),
-            "reservation_types"      => $item->canBeReserved(),
-            "contract_types"         => $item->canUseContracts(),
-            "unicity_types"          => $item->canUseUnicity(),
-            "location_types"         => isset($fields['locations_id']),
-            "itemdevices_types"      => $item->canUseItemDevice()
-        ]);
+        $options = [
+            "document_types"                => $item->canUseDocuments(),
+            "helpdesk_visible_types"        => $item->canUseTickets(),
+            "linkgroup_types"               => isset($fields["groups_id"]),
+            "linkuser_types"                => isset($fields["users_id"]),
+            "linkgroup_tech_types"          => isset($fields["groups_id_tech"]),
+            "linkuser_tech_types"           => isset($fields["users_id_tech"]),
+            "ticket_types"                  => $item->canUseTickets(),
+            "infocom_types"                 => $item->canUseInfocoms(),
+            "networkport_types"             => $item->canUseNetworkPorts(),
+            "reservation_types"             => $item->canBeReserved(),
+            "contract_types"                => $item->canUseContracts(),
+            "unicity_types"                 => $item->canUseUnicity(),
+            "location_types"                => isset($fields['locations_id']),
+            "itemdevices_types"             => $item->canUseItemDevice(),
+            "itemdevicememory_types"        => $item->canUseItemDevice(),
+            "itemdevicepowersupply_types"   => $item->canUseItemDevice(),
+            "itemdevicenetworkcard_types"   => $item->canUseItemDevice(),
+            "itemdeviceharddrive_types"     => $item->canUseItemDevice(),
+            "itemdevicebattery_types"       => $item->canUseItemDevice(),
+            "itemdevicefirmware_types"      => $item->canUseItemDevice(),
+            "itemdevicesimcard_types"       => $item->canUseItemDevice(),
+            "itemdevicegeneric_types"       => $item->canUseItemDevice(),
+            "itemdevicepci_types"           => $item->canUseItemDevice(),
+            "itemdevicesensor_types"        => $item->canUseItemDevice(),
+            "itemdeviceprocessor_types"     => $item->canUseItemDevice(),
+            "itemdevicesoundcard_types"     => $item->canUseItemDevice(),
+            "itemdevicegraphiccard_types"   => $item->canUseItemDevice(),
+            "itemdevicemotherboard_types"   => $item->canUseItemDevice(),
+            "itemdevicecamera_types"        => $item->canUseItemDevice(),
+
+        ];
+
+        $glpiVersion = new Plugin();
+        $glpiVersion = $glpiVersion->getGlpiVersion();
+
+        if (version_compare($glpiVersion, "10.0.19", '>=')) {
+            $options["itemdevicedrive_types"] = $item->canUseItemDevice();
+            $options["itemdevicecontrol_types"] = $item->canUseItemDevice();
+        }
+
+        Plugin::registerClass($class, $options);
 
         if (plugin_genericobject_haveRight($class, READ)) {
             //Change url for adding a new object, depending on template management activation
@@ -245,10 +271,6 @@ class PluginGenericobjectObject extends CommonDBTM
             if ($item->canUseGlobalSearch()) {
                 if (!in_array($class, $CFG_GLPI['asset_types'])) {
                     array_push($CFG_GLPI['asset_types'], $class);
-                }
-
-                if (!in_array($class, $CFG_GLPI['state_types'])) {
-                    array_push($CFG_GLPI['state_types'], $class);
                 }
 
                 if (!in_array($class, $CFG_GLPI['globalsearch_types'])) {
@@ -627,7 +649,7 @@ class PluginGenericobjectObject extends CommonDBTM
     public static function getFieldsToHide()
     {
         return ['id', 'is_recursive', 'is_template', 'template_name', 'is_deleted',
-            'entities_id', 'notepad', 'date_mod', 'date_creation'
+            'entities_id', 'notepad', 'date_mod', 'date_creation', 'ticket_tco'
         ];
     }
 

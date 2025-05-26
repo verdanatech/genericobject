@@ -28,7 +28,7 @@
  * -------------------------------------------------------------------------
  */
 
-define('PLUGIN_GENERICOBJECT_VERSION', '2.14.10');
+define('PLUGIN_GENERICOBJECT_VERSION', '2.14.14');
 
 // Minimal GLPI version, inclusive
 define("PLUGIN_GENERICOBJECT_MIN_GLPI", "10.0.0");
@@ -117,12 +117,12 @@ function plugin_init_genericobject()
     global $PLUGIN_HOOKS, $GO_BLACKLIST_FIELDS,
           $GENERICOBJECT_PDF_TYPES, $GO_LINKED_TYPES, $GO_READONLY_FIELDS, $CFG_GLPI;
 
-    $GO_READONLY_FIELDS  =  ["is_helpdesk_visible", "comment"];
+    $GO_READONLY_FIELDS  =  ["is_helpdesk_visible", "comment", "ticket_tco"];
 
     $GO_BLACKLIST_FIELDS =  ["itemtype", "table", "is_deleted", "id", "entities_id",
         "is_recursive", "is_template", "notepad", "template_name",
         "date_mod", "name", "is_helpdesk_visible", "comment",
-        "date_creation"
+        "date_creation", "ticket_tco"
     ];
 
     $GO_LINKED_TYPES     =  ['Computer', 'Phone', 'Peripheral', 'Software', 'Monitor',
@@ -217,6 +217,7 @@ function plugin_post_init_genericobject()
         'PluginGenericobjectProfile',
         ['addtabon' => ['Profile', 'PluginGenericobjectType']]
     );
+
 
     foreach (PluginGenericobjectType::getTypes() as $id => $objecttype) {
         $itemtype = $objecttype['itemtype'];
