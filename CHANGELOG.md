@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [3.0.2 End-of-Life Updater] - 2025-11-20
+
+- Secured, fixed, and enhanced the uninstall process
+
+## [3.0.1 End-of-Life Updater] - 2025-11-13
+
+- Fix Twig error on migration_status page
+- Check method existence before calling uninstall on custom assets
+
+## [3.0.0 End-of-Life Updater] - 2025-30-09
+
+- End-of-Life Support and Compatibility with GLPI 11
 
 ## [2.14.14] - 2025-04-23
 
