@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.3] - 2026-08-11
+
+- Add type renaming
+
 ## [3.0.2 End-of-Life Updater] - 2025-11-20
 
 - Secured, fixed, and enhanced the uninstall process
